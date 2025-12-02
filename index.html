@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>// PHANTOM THIEVES REPORT // CODE_NAME: RUST-00</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Persona 5 Color Palette */
+        :root {
+            --p5-red: #E53935; /* Primary Red */
+            --p5-black: #111111;
+            --p5-white: #F0F0F0;
+            --p5-gray: #444444;
+        }
+
+        /* Use a bold, angular font like Oswald or Bebas Neue for P5 feel, or default to a strong sans-serif */
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght=700&display=swap');
+
+        /* The overall dark background */
+        body {
+            /* --- NEW BACKGROUND IMAGE ADDED --- */
+            background-image: url('assets/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Keeps background fixed during scroll */
+            /* --- END NEW BACKGROUND IMAGE --- */
+
+            background-color: var(--p5-black); /* Fallback */
+            font-family: 'Oswald', 'Bebas Neue', sans-serif; /* P5-style angular font */
+            color: var(--p5-white);
+            /* Cursor changed to a red crosshair/target */
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16"><rect x="6" y="0" width="4" height="16" fill="%23E53935"/><rect x="0" y="6" width="16" height="4" fill="%23E53935"/></svg>'), default; 
+            overflow-x: hidden; /* Prevent horizontal scroll from skew */
+        }
+
+        /* Main P5 Layout Skew */
+        .p5-container-wrapper {
+            /* Skew the entire main layout diagonally */
+            transform: skewY(-4deg);
+            padding: 4rem 0;
+            /* Using a semi-transparent black overlay to ensure text readability over the background image */
+            background-color: rgba(0, 0, 0, 0.85); 
+        }
+
+        .p5-container {
+            /* Counter-skew the inner content to look straight */
+            transform: skewY(4deg);
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: transparent; /* Changed to transparent to see the image behind the wrapper */
+            padding: 2rem;
+        }
+
+        /* Angular Header and Titles */
+        .p5-header, .p5-title {
+            background-color: var(--p5-red);
+            color: var(--p5-white);
+            padding: 0.5rem 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 2.25rem; /* text-4xl equivalent */
+            font-weight: 700;
+            line-height: 1;
+            border-bottom: 3px solid var(--p5-white);
+        }
+
+        /* Secondary Title Blocks */
+        h2 {
+            border-left: 5px solid var(--p5-red);
+            padding-left: 0.75rem;
+            color: var(--p5-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        /* The sharp, angular button style */
+        .p5-button {
+            font-family: 'Oswald', sans-serif;
+            background-color: var(--p5-red);
+            color: var(--p5-white);
+            border: 2px solid var(--p5-white);
+            transition: all 0.1s;
+            text-transform: uppercase;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%); /* Angular cut */
+            padding: 0.75rem 1.5rem;
+        }
+        .p5-button:hover {
+            background-color: var(--p5-white);
+            color: var(--p5-black);
+            border-color: var(--p5-red);
+        }
+
+        /* Styling for the mouse trail (Red Slashes/Bursts) */
+        .trail {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: var(--p5-red);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.9;
+            animation: fadeOutP5 0.3s forwards;
+            /* Give it an angular, slash-like shape */
+            transform: rotate(45deg); 
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 50% 100%, 0 100%);
+        }
+
+        @keyframes fadeOutP5 {
+            from { opacity: 0.9; transform: scale(1) rotate(45deg); }
+            to { opacity: 0; transform: scale(0.5) rotate(90deg); }
+        }
+
+        /* Custom Modal/Alert Box */
+        #customAlert > div {
+            background-color: var(--p5-red);
+            color: var(--p5-white);
+            border: 3px solid var(--p5-white);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
+        }
+
+        /* Persona Card Placeholder - Mimics a standard Persona/Confidant card */
+        .p5-persona-card {
+            width: 100%;
+            height: 180px;
+            background-color: var(--p5-red);
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.1),
+                rgba(255, 255, 255, 0.1) 10px,
+                transparent 10px,
+                transparent 20px
+            ); /* Signature diagonal striping */
+            font-size: 1.5rem;
+            line-height: 1;
+            text-transform: uppercase;
+            font-weight: 700;
+            border: 2px solid var(--p5-white);
+            box-shadow: 0 0 10px rgba(229, 57, 53, 0.8);
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 90% 100%, 0 100%); /* Angular cut bottom-right */
+            position: relative; /* Crucial for image positioning */
+            overflow: hidden; /* Crucial for image fitting */
+        }
+
+        /* Menu item styling - like Social Link list */
+        .p5-menu-item {
+            padding: 0.5rem 0.75rem;
+            transition: background-color 0.1s;
+            cursor: pointer;
+            border-left: 2px solid transparent;
+        }
+
+        .p5-menu-item:hover {
+            background-color: var(--p5-red);
+            border-left: 2px solid var(--p5-white);
+            color: var(--p5-white);
+        }
+
+        .p5-text-small {
+            font-size: 0.8rem; /* Equivalent to text-xs */
+        }
+    </style>
+</head>
+<body class="p-0">
+    
+    <!-- WELCOME / ACCESS SCREEN OVERLAY (The "CONFESSION") -->
+    <div id="welcomeScreen" class="fixed inset-0 bg-black flex items-center justify-center z-[100] p-4">
+        <div class="p-8 bg-black border-4 border-double border-red-500 text-center max-w-lg w-full rounded-none space-y-6">
+            <h1 class="text-4xl p5-header">[ ALERT: COGNITIVE EXTRACTION ]</h1>
+            <p class="text-xl text-white font-mono leading-tight">
+                // METAVERSE_ENTRY: Awaiting command from THIEF_ID: JOKER...
+            </p>
+            <button id="accessButton" class="p5-button p-3 text-xl w-full" onclick="handleAccessGranted()">
+                [ ENTER PALACE ]
+            </button>
+        </div>
+    </div>
+
+    <!-- P5 Skewed Wrapper -->
+    <div class="p5-container-wrapper">
+        <div class="p5-container">
+            <!-- HEADER/TARGET DATA SECTION -->
+            <header class="p-4 bg-black border-b-4 border-b-red-600">
+                <div class="p5-header">
+                    HEIST REPORT: <span id="targetName">RUST-00</span>
+                </div>
+                <p class="p-5 p5-text-small text-red-400 font-bold">
+                    // PHANTOM_ID: JOKER // CODENAME: RED THORN // STATUS: INFILTRATED
+                </p>
+                <div class="bg-white/10 p-1 mt-2 p5-text-small text-center text-white/70">
+                    <marquee>
+                        <i class="fas fa-mask"></i> WARNING: SECURITY LEVEL 99%. TIME TO STEAL THE TREASURE IS LIMITED.
+                    </marquee>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                
+                <!-- LEFT COLUMN (Main Profile Content - Stacked Sections) -->
+                <div class="md:col-span-2 space-y-6">
+                    
+                    <!-- 1. IDENTITY / PERSONA CARD SECTION -->
+                    <section id="content-identity" class="p-4 bg-gray-900 border-2 border-red-500 shadow-xl relative overflow-hidden">
+                        <h2 class="mb-4">
+                            PERSONA MANIFESTATION
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            
+                            <!-- Left: Persona Card (Avatar) -->
+                            <div class="col-span-1 p5-persona-card">
+                                <!-- AVATAR.JPG - Path updated to assets/AVATAR.JPG -->
+                                <a href="https://github.com/zairys0" target="_blank" title="Go to User Profile">
+                                    <img src="assets/AVATAR.JPG" 
+                                        alt="Phantom Thief Avatar" 
+                                        class="w-full h-full object-cover absolute top-0 left-0" 
+                                        onerror="this.onerror=null;this.src='https://placehold.co/600x600/111111/E53935?text=AVATAR_LOAD_ERROR';"
+                                    />
+                                </a>
+                                <div class="absolute bottom-0 left-0 bg-red-800/80 p-1 w-full text-center text-xs font-mono z-10">
+                                    // ARCHANA: THE FOOL // ARSENE
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Status and Stats -->
+                            <div class="col-span-2 space-y-2 text-white p5-text-small leading-relaxed mt-2 md:mt-0">
+                                <!-- Icon Placeholder (ICON.JPG) - Path updated to assets/icon.jpg -->
+                                <a href="https://github.com/zairys0" target="_blank" title="Go to Icon Source" class="float-right ml-4">
+                                    <div class="w-12 h-12 bg-gray-700 border-2 border-red-500 mb-4 flex items-center justify-center">
+                                        <!-- ICON.JPG - Path updated to assets/icon.jpg -->
+                                        <img src="assets/icon.jpg" 
+                                            alt="Persona Icon" 
+                                            class="w-full h-full object-cover" 
+                                            onerror="this.onerror=null;this.src='https://placehold.co/40x40/444444/E53935?text=ICON_LOAD_ERROR';"
+                                        />
+                                    </div>
+                                </a>
+                                <!-- NOTE: The float-right is crucial here to keep the layout correct. -->
+
+
+                                <p>
+                                    <span class="text-red-400 font-bold">// NAME:</span> Zai (CODE: GOLD)
+                                </p>
+                                <p>
+                                    <span class="text-red-400 font-bold">// STATS:</span> Media Journalist @nipponclub_
+                                </p>
+                                <p>
+                                    <span class="text-red-400 font-bold">// TRAITS:</span> [REDACTED]
+                                </p>
+                                <p>
+                                    <span class="text-red-400 font-bold">// AFFINITIES:</span> HTML, Hardware Tinkering, Basic Python, Visuals
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Visual Separator (Red Slash Divider) -->
+                    <div class="h-2 bg-red-700 w-full transform skew-y-1 mt-6 mb-6"></div>
+
+                    <!-- 2. DATA LOGS / HEIST REPORTS SECTION (Menu Style) -->
+                    <section id="content-data-logs" class="p-4 bg-gray-900 border-2 border-red-500 shadow-xl">
+                        <h2 class="mb-4">
+                            PHANTOM THIEF ACTIVITIES LOG
+                        </h2>
+                        <ul class="space-y-0.5 text-sm text-white/80">
+                            <!-- Activity Log Item 1 -->
+                            <li class="p5-menu-item flex justify-between items-center">
+                                <span><i class="fas fa-chevron-right text-red-500 mr-2"></i> zairys0.github.io/yvl [V2]</span> 
+                                <span class="text-green-400 font-bold">SUCCESS</span>
+                            </li>
+                            <!-- Activity Log Item 2 -->
+                            <li class="p5-menu-item flex justify-between items-center">
+                                <span><i class="fas fa-chevron-right text-red-500 mr-2"></i> zairys0.github.io</span> 
+                                <span class="text-white/70">ARCHIVED</span>
+                            </li>
+                            <!-- Activity Log Item 3 -->
+                            <li class="p5-menu-item flex justify-between items-center">
+                                <span><i class="fas fa-chevron-right text-red-500 mr-2"></i> FILE_SORTER</span> 
+                                <span class="text-yellow-400">ARCHIVED</span>
+                            </li>
+                        </ul>
+                    </section>
+                    
+                    <!-- Visual Separator (Red Slash Divider) -->
+                    <div class="h-2 bg-red-700 w-full transform skew-y-1 mt-6 mb-6"></div>
+
+                    <!-- 3. ENCRYPTION TERMINAL (CALLING CARD GENERATOR) -->
+                    <section id="content-encryption" class="p-4 bg-black border-4 border-dashed border-red-500 shadow-lg">
+                        <h2 class="text-xl font-bold text-center mb-4">
+                            CALLING CARD ENCRYPTION TERMINAL
+                        </h2>
+                        <div class="mb-4 space-y-2">
+                            <input type="text" id="plainTextInput" placeholder="TARGET'S NAME (Plain Text)" class="w-full p-2 bg-white/10 border-2 border-red-500 text-white focus:outline-none focus:border-white rounded-none">
+                            <select id="cipherSelect" class="w-full p-2 bg-white/10 border-2 border-red-500 text-white focus:outline-none focus:border-white rounded-none">
+                                <option value="rot13">CODE: Shadow Speak (ROT13)</option>
+                                <option value="leet">CODE: Phantom Glyphs (L33t)</option>
+                            </select>
+                            <button class="p5-button w-full p-2" onclick="processData()">
+                                <span class="text-white">[</span> TAKE THEIR HEARTS <span class="text-white">]</span>
+                            </button>
+                        </div>
+                        
+                        <div class="p-3 border-2 border-red-500 bg-white/10 text-xs">
+                            <div class="text-red-400 mb-1">FINAL WARNING: <span class="text-white font-bold" id="cipherNameDisplay">Shadow Speak</span></div>
+                            <textarea id="cipherOutput" readonly rows="5" placeholder="THE PHANTOM THIEVES WILL TAKE YOUR HEART..." class="w-full p-1 bg-transparent text-white focus:outline-none resize-none"></textarea>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- RIGHT COLUMN (System Metrics - Fixed) -->
+                <aside class="md:col-span-1 space-y-4">
+                    
+                    <!-- Metrics/Counter Section (Cognitive Stress) -->
+                    <div class="p-3 bg-red-700 border-4 border-double border-white text-center rounded-none shadow-xl sticky top-4">
+                        <p class="font-bold text-lg mb-2 text-white p5-text-small">COGNITIVE DEFENSE LEVEL:</p>
+                        <div id="hitCounter" class="text-4xl text-black font-extrabold bg-white p-2 border-2 border-black inline-block">00001</div>
+                        <p class="text-sm mt-2 text-white p5-text-small">SEEKING TREASURE IN PALACE <span id="counterDisplay">1</span></p>
+                    </div>
+
+                    <!-- Banners/Links -->
+                    <div class="space-y-2">
+                        <!-- Added placeholder links to the banners -->
+                        <a href="https://github.com/zairys0" target="_blank">
+                            <img src="https://placehold.co/120x60/E53935/FFFFFF?text=TAKE+YOUR+HEART" alt="P5 Banner 1" class="mx-auto block border-2 border-white rounded-none hover:opacity-80 transition duration-200">
+                        </a>
+                        <a href="https://github.com/zairys0" target="_blank">
+                            <img src="https://placehold.co/120x60/111111/E53935?text=REBELLION" alt="P5 Banner 2" class="mx-auto block border-2 border-red-500 rounded-none hover:opacity-80 transition duration-200">
+                        </a>
+                    </div>
+
+                    <!-- Vertical GIF Placeholder - Using the uploaded icon.gif -->
+                    <div class="p-2 bg-black border-2 border-solid border-red-500 text-center shadow-lg">
+                        <a href="https://github.com/zairys0" target="_blank" title="View Animated Persona Icon">
+                            <div class="p5-persona-card h-[250px] flex flex-col justify-center items-center text-sm">
+                                <!-- icon.gif - Path updated to assets/icon.gif -->
+                                <img src="assets/icon.gif" 
+                                    alt="Persona GIF Placeholder" 
+                                    class="w-full h-full object-cover" 
+                                    onerror="this.onerror=null;this.src='https://placehold.co/200x250/111111/E53935?text=ICON_GIF_LOAD_ERROR';"
+                                />
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Contact Link -> DATA TRANSFER (P5 Social Link) -->
+                     <div class="p-3 bg-red-500 border-2 border-solid border-white text-center shadow-lg">
+                        <a href="javascript:alertBox('SOCIAL LINK RANK UP! You feel your bond strengthening...')" class="text-white font-bold text-lg hover:text-black transition duration-200 block">
+                            <span class="animate-pulse text-xl">SOCIAL LINK ></span>
+                        </a>
+                    </div>
+
+                    <!-- Social/External Links -->
+                    <div class="p-3 bg-gray-900 border-2 border-solid border-red-500 text-center shadow-lg">
+                        <h3 class="text-sm font-bold mb-3 text-red-400 p5-text-small">PHANTOM NETWORKS</h3>
+                        <div class="flex justify-around items-center space-x-2">
+                            <!-- Instagram -->
+                            <a href="https://instagram.com/verdezaii" target="_blank" title="Instagram" class="text-2xl text-white hover:text-red-500 transition duration-200">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <!-- Spotify -->
+                            <a href="https://open.spotify.com/user/213ap2iawmbnr66bfkq7uq4cy?si=5c74c98d9d5849c6" target="_blank" title="Spotify" class="text-2xl text-white hover:text-red-500 transition duration-200">
+                                <i class="fab fa-spotify"></i>
+                            </a>
+                            <!-- Discord -->
+                            <a href="https://discord.com/users/653172098554003457" target="_blank" title="Discord" class="text-2xl text-white hover:text-red-500 transition duration-200">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                            <!-- Steam -->
+                            <a href="https://steamcommunity.com/id/verdezai" target="_blank" title="Steam" class="text-2xl text-white hover:text-red-500 transition duration-200">
+                                <i class="fab fa-steam"></i>
+                            </a>
+                            <!-- GitHub -->
+                            <a href="https://github.com/zairys0" target="_blank" title="GitHub" class="text-2xl text-white hover:text-red-500 transition duration-200">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Music Player / AUDIO LOG -->
+                    <div class="p-3 bg-black border-2 border-dashed border-red-500 text-center shadow-lg">
+                        <h3 class="text-sm font-bold mb-3 text-red-400 p5-text-small">[TokyoEmergency.wav]</h3>
+                        <audio controls id="backgroundMusic" class="w-full bg-black border border-red-500" style="filter: brightness(1.5) contrast(2) saturate(1.5);">
+                            <!-- Styling changed to look more vibrant -->
+                            <source src="assets/music.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </aside>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="text-center pt-4 mt-8 bg-red-700/50 p-2 text-white p5-text-small font-bold border-t-2 border-white transform -skew-y-1">
+                <div class="transform skew-y-1">
+                    <i class="fas fa-exclamation-triangle"></i>  // JUSTICE WILL BE SERVED
+                </div>
+            </footer>
+        </div> <!-- End p5-container -->
+    </div> <!-- End p5-container-wrapper -->
+    
+    <!-- Custom Modal/Alert Box -->
+    <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-90 hidden flex items-center justify-center z-50">
+        <div class="p-6 max-w-sm w-full text-center space-y-4">
+            <div class="text-2xl font-bold mb-2 border-b-2 border-dotted border-white" id="alertTitle">[ COGNITIVE DISTORTION ]</div>
+            <p class="p5-text-small" id="alertMessage"></p>
+            <button class="p5-button p-2 text-sm" onclick="closeAlert()">
+                [ OKAY ]
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- UTILITY FUNCTIONS ---
+
+        // 1. Alert Box Replacement
+        const alertBox = (message, title = "[ COGNITIVE DISTORTION ]") => {
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('customAlert').classList.remove('hidden');
+        }
+
+        const closeAlert = () => {
+            document.getElementById('customAlert').classList.add('hidden');
+        }
+
+        // 2. Mouse Trail Effect (Red Slashes)
+        document.addEventListener('mousemove', (e) => {
+            const trail = document.createElement('div');
+            trail.className = 'trail';
+            
+            // Set position based on mouse coordinates
+            trail.style.left = `${e.pageX}px`;
+            trail.style.top = `${e.pageY}px`;
+            
+            document.body.appendChild(trail);
+
+            // Remove the trail after its animation completes (0.3s)
+            setTimeout(() => {
+                trail.remove();
+            }, 300);
+        });
+
+        // 3. Access Grant Handler (Hides preloader and plays music)
+        window.handleAccessGranted = () => {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const musicPlayer = document.getElementById('backgroundMusic');
+
+            // 1. Hide the welcome screen
+            welcomeScreen.classList.add('hidden');
+
+            // 2. Set volume to 40% (0.4) as requested
+            musicPlayer.volume = 0.20;
+
+            // 3. Start playing music (This must be triggered by a user action)
+            musicPlayer.play().catch(error => {
+                console.error("Autoplay failed:", error);
+                alertBox("SYSTEM WARNING: Audio playback blocked. Please click anywhere to allow audio.");
+            });
+        };
+        
+        // --- DATA ENCRYPTION FUNCTIONS (Calling Card Generator) ---
+
+        // Function to handle the encryption logic
+        window.processData = () => {
+            const plainText = document.getElementById('plainTextInput').value.toUpperCase();
+            const cipherType = document.getElementById('cipherSelect').value;
+            const outputArea = document.getElementById('cipherOutput');
+            const cipherNameDisplay = document.getElementById('cipherNameDisplay');
+
+            if (!plainText) {
+                alertBox("TARGET NAME REQUIRED. Input buffer empty. Aborting extraction.");
+                return;
+            }
+
+            let result = "";
+            
+            // Set the display name
+            cipherNameDisplay.textContent = cipherType === 'rot13' ? 'Shadow Speak' : 'Phantom Glyphs';
+
+            // Select the correct cipher function
+            switch (cipherType) {
+                case 'rot13':
+                    result = rot13(plainText);
+                    break;
+                case 'leet':
+                    result = leet(plainText);
+                    break;
+                default:
+                    result = "ERROR: UNKNOWN PHANTOM PROTOCOL.";
+            }
+
+            outputArea.value = `WE ARE THE PHANTOM THIEVES OF HEARTS. WE WILL TAKE YOUR DISTORTED DESIRES, ${result}. - JOKER`;
+            alertBox(`CALLING CARD TEXT GENERATED for: ${plainText}.`, "[ CARD DISPATCHED ]");
+        }
+
+        // ROT13 Cipher implementation
+        const rot13 = (str) => {
+            return str.replace(/[a-zA-Z]/g, function(c) {
+                return String.fromCharCode(
+                    (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26
+                );
+            });
+        }
+
+        // LEET Speak Cipher implementation
+        const leetMap = {
+            'A': '4', 'E': '3', 'I': '1', 'O': '0',
+            'S': '5', 'T': '7', 'B': '8', 'G': '9',
+            'U': '|_|', 'D': '|>','L': '1', 'P': '|>'
+        };
+
+        const leet = (str) => {
+            // Updated leet function for better P5 style
+            let leetStr = str;
+            for (const [key, value] of Object.entries(leetMap)) {
+                // Using global replace for consistency
+                leetStr = leetStr.replace(new RegExp(key, 'g'), value);
+            }
+            return leetStr;
+        }
+
+        // 4. Hit Counter (Random Start)
+        const counterDisplay = document.getElementById('hitCounter');
+        let hits = Math.floor(Math.random() * 9000) + 1000; // Start with a random higher number
+        counterDisplay.textContent = String(hits).padStart(5, '0');
+        
+        // Bonus: Make the counter go up every 10 seconds
+        setInterval(() => {
+            hits++;
+            counterDisplay.textContent = String(hits).padStart(5, '0');
+        }, 10000);
+
+        // 5. Initialize Display
+        const initializeDisplay = () => {
+             // Updates the target ID display based on the starting hit count (last digit)
+             document.getElementById('counterDisplay').textContent = String(hits).slice(-1); 
+        }
+
+        initializeDisplay();
+
+    </script>
+</body>
+</html>
