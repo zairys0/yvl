@@ -1,0 +1,11 @@
+This file is used by Jekyll (GitHub Pages) to configure the build process.
+
+Tell Jekyll to exclude the 'assets' directory from processing.
+
+Your site uses a self-contained index.html and doesn't rely on Jekyll's
+
+SASS compilation, so we can ignore this path where Jekyll is looking for style.scss.
+
+exclude:
+
+assets/
